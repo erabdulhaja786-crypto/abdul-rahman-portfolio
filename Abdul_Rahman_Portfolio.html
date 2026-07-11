@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdul Rahman — Software Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d1a14;
+    --bg-panel: #122419;
+    --bg-panel-2: #0f1f16;
+    --copper: #c97c4a;
+    --copper-dim: #6b4a34;
+    --gold: #e0ac52;
+    --text: #eae6da;
+    --text-dim: #8ea393;
+    --trace: #3d5c46;
+    --glow: #e0ac52;
+    --danger: #c9704a;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Manrope', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .mono{ font-family:'Space Mono', monospace; }
+
+  /* subtle PCB grid texture */
+  .board-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(61,92,70,0.14) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(61,92,70,0.14) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 90%);
+  }
+
+  a{ color:var(--gold); }
+
+  ::selection{ background:var(--copper); color:#0d1a14; }
+
+  :focus-visible{
+    outline: 2px solid var(--gold);
+    outline-offset: 3px;
+  }
+
+  .wrap{ max-width:920px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height: 92vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    z-index:1;
+    padding: 40px 0 60px;
+  }
+
+  .hero-eyebrow{
+    font-size:12px;
+    letter-spacing:0.22em;
+    color:var(--copper);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+    opacity:0;
+    animation: fadeUp 0.7s ease 0.1s forwards;
+  }
+  .hero-eyebrow::before{
+    content:"";
+    width:26px; height:1px;
+    background:var(--copper);
+    display:inline-block;
+  }
+
+  .hero h1{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size: clamp(2.4rem, 7vw, 4.6rem);
+    line-height:1.04;
+    margin:0 0 20px;
+    letter-spacing:-0.01em;
+    opacity:0;
+    animation: fadeUp 0.7s ease 0.25s forwards;
+  }
+
+  .hero .role{
+    font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+    color:var(--gold);
+    font-weight:600;
+    margin:0 0 18px;
+    opacity:0;
+    animation: fadeUp 0.7s ease 0.4s forwards;
+  }
+  .hero .role .sep{ color:var(--trace); margin:0 10px; font-weight:400; }
+
+  .hero p.desc{
+    max-width:560px;
+    color:var(--text-dim);
+    font-size:1.02rem;
+    margin:0 0 34px;
+    opacity:0;
+    animation: fadeUp 0.7s ease 0.55s forwards;
+  }
+
+  .hero-links{
+    display:flex; flex-wrap:wrap; gap:12px;
+    opacity:0;
+    animation: fadeUp 0.7s ease 0.7s forwards;
+  }
+  .pill{
+    font-family:'Space Mono', monospace;
+    font-size:12.5px;
+    color:var(--text);
+    background:var(--bg-panel);
+    border:1px solid var(--trace);
+    padding:9px 14px;
+    border-radius:3px;
+    text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    transition: border-color .2s ease, color .2s ease, box-shadow .2s ease;
+  }
+  .pill:hover, .pill:focus-visible{
+    border-color:var(--gold); color:var(--gold);
+    box-shadow: 0 0 0 1px var(--gold) inset, 0 0 14px -6px var(--gold);
+  }
+  .pill .dot{ width:6px; height:6px; border-radius:50%; background:var(--copper); }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* ---------- CIRCUIT TRACE ---------- */
+  .circuit{
+    position:relative;
+  }
+  .trace-track{
+    position:absolute;
+    left:-2px;
+    top:6px;
+    bottom:6px;
+    width:2px;
+    background:var(--trace);
+  }
+  .trace-fill{
+    position:absolute;
+    left:-2px;
+    top:6px;
+    width:2px;
+    height:0;
+    background: linear-gradient(var(--gold), var(--copper));
+    box-shadow: 0 0 10px 0 rgba(224,172,82,0.5);
+  }
+  .pad{
+    position:absolute;
+    left:-7px;
+    width:12px; height:12px;
+    border-radius:50%;
+    background:var(--bg-panel);
+    border:2px solid var(--trace);
+    transition: border-color .4s ease, background .4s ease, box-shadow .4s ease;
+  }
+  .pad.lit{
+    border-color:var(--gold);
+    background:var(--gold);
+    box-shadow: 0 0 12px 2px rgba(224,172,82,0.6);
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{
+    padding: 56px 0 56px 30px;
+    position:relative;
+    scroll-margin-top: 20px;
+  }
+  section + section{ border-top:1px dashed rgba(61,92,70,0.4); }
+
+  .designator{
+    font-family:'Space Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.16em;
+    color:var(--copper);
+    margin:0 0 8px;
+  }
+  .designator span{ color:var(--text-dim); font-weight:400; letter-spacing:0.05em; }
+
+  h2.section-title{
+    font-family:'Space Mono', monospace;
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    margin: 0 0 22px;
+    color:var(--text);
+  }
+
+  .lede{ color:var(--text-dim); max-width:640px; }
+
+  /* ---------- SKILLS ---------- */
+  .skill-group{ margin-bottom:26px; }
+  .skill-group:last-child{ margin-bottom:0; }
+  .skill-group h3{
+    font-family:'Space Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.12em;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    margin:0 0 12px;
+  }
+  .chips{ display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{
+    position:relative;
+    font-family:'Space Mono', monospace;
+    font-size:12.5px;
+    color:var(--text);
+    background:var(--bg-panel);
+    border:1px solid var(--trace);
+    padding:8px 16px;
+    border-radius:2px;
+    transition: border-color .2s ease, transform .2s ease;
+  }
+  .chip::before, .chip::after{
+    content:"";
+    position:absolute;
+    top:50%; transform:translateY(-50%);
+    width:6px; height:2px;
+    background:var(--trace);
+    transition: background .2s ease;
+  }
+  .chip::before{ left:-6px; }
+  .chip::after{ right:-6px; }
+  .chip:hover{ border-color:var(--gold); transform:translateY(-2px); }
+  .chip:hover::before, .chip:hover::after{ background:var(--gold); }
+
+  /* ---------- PROJECTS ---------- */
+  .project{
+    background:var(--bg-panel);
+    border:1px solid var(--trace);
+    border-radius:4px;
+    padding:24px 26px;
+    margin-bottom:18px;
+  }
+  .project:last-child{ margin-bottom:0; }
+  .project h3{
+    font-family:'Space Mono', monospace;
+    font-size:1.05rem;
+    margin:0 0 4px;
+    color:var(--gold);
+  }
+  .project .kind{
+    font-size:12px;
+    color:var(--text-dim);
+    margin:0 0 14px;
+    letter-spacing:0.04em;
+  }
+  .project ul{ margin:0; padding-left:18px; color:var(--text-dim); }
+  .project li{ margin-bottom:6px; }
+  .project li::marker{ color:var(--copper); }
+
+  /* ---------- EXPERIENCE / EDUCATION ---------- */
+  .entry{ margin-bottom:22px; }
+  .entry:last-child{ margin-bottom:0; }
+  .entry-head{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px 16px;
+    margin-bottom:8px;
+  }
+  .entry-head h3{ margin:0; font-size:1.05rem; color:var(--text); }
+  .entry-head .when{
+    font-family:'Space Mono', monospace;
+    font-size:12px; color:var(--copper);
+    white-space:nowrap;
+  }
+  .entry .place{ color:var(--text-dim); font-size:0.92rem; margin:0 0 10px; }
+  .entry ul{ margin:0; padding-left:18px; color:var(--text-dim); }
+  .entry li{ margin-bottom:6px; }
+  .entry li::marker{ color:var(--copper); }
+
+  /* ---------- CERTS / AWARDS ---------- */
+  .grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:32px;
+  }
+  @media (max-width:640px){ .grid-2{ grid-template-columns:1fr; } }
+  .grid-2 h3{
+    font-family:'Space Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.1em;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    margin:0 0 14px;
+  }
+  .list-plain{ list-style:none; margin:0; padding:0; }
+  .list-plain li{
+    padding:10px 0;
+    border-bottom:1px dashed rgba(61,92,70,0.4);
+    font-size:0.95rem;
+    color:var(--text);
+    display:flex; justify-content:space-between; gap:12px;
+  }
+  .list-plain li:last-child{ border-bottom:none; }
+  .list-plain .yr{ color:var(--text-dim); font-family:'Space Mono', monospace; font-size:12px; white-space:nowrap; }
+
+  .languages{
+    margin-top:30px;
+    display:flex; gap:22px; flex-wrap:wrap;
+  }
+  .languages .lang{
+    font-family:'Space Mono', monospace;
+    font-size:12.5px;
+    color:var(--text-dim);
+  }
+  .languages .lang b{ color:var(--text); font-weight:600; }
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  footer{
+    padding: 60px 24px 50px 54px;
+    position:relative;
+    z-index:1;
+    border-top:1px dashed rgba(61,92,70,0.4);
+  }
+  footer .wrap{ padding:0; }
+  footer h2{
+    font-family:'Space Mono', monospace;
+    font-size:clamp(1.4rem,3.4vw,2rem);
+    margin:0 0 14px;
+  }
+  footer p{ color:var(--text-dim); max-width:480px; margin:0 0 26px; }
+  footer .foot-note{
+    margin-top:46px;
+    font-size:11.5px;
+    color:var(--trace);
+    font-family:'Space Mono', monospace;
+    letter-spacing:0.06em;
+  }
+
+  @media (max-width:640px){
+    .trace-track, .trace-fill, .pad{ display:none; }
+    section{ padding-left:0; }
+    footer{ padding-left:24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="board-bg"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="hero-eyebrow mono">FRESHER · BATCH 2026 · TIRUNELVELI, TAMIL NADU</p>
+    <h1>Abdul Rahman</h1>
+    <p class="role mono">Frontend <span class="sep">/</span> Python <span class="sep">/</span> Full-Stack</p>
+    <p class="desc">Electrical &amp; Electronics Engineering graduate who traded circuit diagrams for code — now building responsive front ends, Python back ends, and the database logic that connects them.</p>
+    <div class="hero-links">
+      <a class="pill" href="mailto:erabdulhaja786@gmail.com"><span class="dot"></span>erabdulhaja786@gmail.com</a>
+      <a class="pill" href="tel:+918148825904"><span class="dot"></span>+91 81488 25904</a>
+      <span class="pill"><span class="dot"></span>Tirunelveli, TN 627002</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="circuit" id="circuit">
+    <div class="trace-track"></div>
+    <div class="trace-fill" id="traceFill"></div>
+
+    <section id="about" data-pad>
+      <p class="designator">U1 <span>// ABOUT</span></p>
+      <h2 class="section-title">Objective</h2>
+      <p class="lede">B.E. in Electrical &amp; Electronics Engineering, graduated May 2026 with 85% overall. Hands-on experience building static and dynamic web applications with HTML, CSS, JavaScript, Bootstrap, Python and MySQL — comfortable working across the front end and back end. A manufacturing engineering internship at Lucas TVS added a habit of structured, quality-driven process work. Looking for a Frontend / Software / Python Developer role, Batch 2026, to start shipping real applications.</p>
+    </section>
+
+    <section id="skills" data-pad>
+      <p class="designator">U2 <span>// SKILLS</span></p>
+      <h2 class="section-title">Technical Skills</h2>
+
+      <div class="skill-group">
+        <h3>Frontend</h3>
+        <div class="chips">
+          <span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">JavaScript (ES6)</span>
+          <span class="chip">Bootstrap</span><span class="chip">Responsive Design</span><span class="chip">DOM Manipulation</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Backend &amp; Programming</h3>
+        <div class="chips">
+          <span class="chip">Python</span><span class="chip">C++</span><span class="chip">Form Handling</span><span class="chip">REST Basics</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Database</h3>
+        <div class="chips">
+          <span class="chip">MySQL</span><span class="chip">Schema Design</span><span class="chip">CRUD Operations</span><span class="chip">Form-to-DB Integration</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Tools &amp; Practices</h3>
+        <div class="chips">
+          <span class="chip">VS Code</span><span class="chip">Git &amp; GitHub</span><span class="chip">Debugging</span><span class="chip">Testing</span><span class="chip">Cross-browser Compatibility</span>
+        </div>
+      </div>
+
+      <div class="skill-group">
+        <h3>Core Strengths</h3>
+        <div class="chips">
+          <span class="chip">Problem-solving</span><span class="chip">Analytical Thinking</span><span class="chip">Teamwork</span><span class="chip">Time Management</span><span class="chip">Fast Learner</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" data-pad>
+      <p class="designator">U3 <span>// PROJECTS</span></p>
+      <h2 class="section-title">Projects</h2>
+
+      <div class="project">
+        <h3>Personal Portfolio Website</h3>
+        <p class="kind">Static website project</p>
+        <ul>
+          <li>Designed and built a portfolio site from scratch with HTML5, CSS3, and Bootstrap, using a responsive layout that adapts across desktop and mobile.</li>
+          <li>Structured semantic sections — About, Skills, Projects, Contact — with custom styling, navigation, and layout, built without page builders.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <h3>Dynamic Form Application with Database Storage</h3>
+        <p class="kind">Dynamic web application project</p>
+        <ul>
+          <li>Built a web app that captures user input through an HTML form and stores it persistently in a MySQL database.</li>
+          <li>Implemented front-end validation and back-end logic for form submission, insertion, and retrieval — core CRUD concepts in practice.</li>
+          <li>Learned to connect a front-end interface to a relational database, the foundation of full-stack development.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="experience" data-pad>
+      <p class="designator">U4 <span>// EXPERIENCE</span></p>
+      <h2 class="section-title">Work Experience</h2>
+      <div class="entry">
+        <div class="entry-head">
+          <h3>Manufacturing Engineer Intern</h3>
+          <span class="when mono">JAN 2026 – MAR 2026</span>
+        </div>
+        <p class="place">Lucas TVS Pvt. Ltd., Chennai</p>
+        <ul>
+          <li>Worked on the Main Line Assembly of the Alternator Production Unit at the Padi plant, gaining exposure to structured processes, quality checks, and cross-functional teamwork in a real production environment.</li>
+          <li>Applied analytical thinking, root-cause analysis, and attention to detail — skills that carry directly into debugging, testing, and process-driven software development.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="education" data-pad>
+      <p class="designator">U5 <span>// EDUCATION</span></p>
+      <h2 class="section-title">Education</h2>
+      <div class="entry">
+        <div class="entry-head">
+          <h3>B.E., Electrical &amp; Electronics Engineering</h3>
+          <span class="when mono">NOV 2022 – MAY 2026</span>
+        </div>
+        <p class="place">Nellai College of Engineering, Tirunelveli</p>
+        <ul>
+          <li>85% overall — meets Batch 2026 fresher eligibility (min. 60%, no standing arrears).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="more" data-pad>
+      <p class="designator">U6 <span>// CERTIFICATIONS &amp; AWARDS</span></p>
+      <h2 class="section-title">Certifications &amp; Awards</h2>
+      <div class="grid-2">
+        <div>
+          <h3>Certifications</h3>
+          <ul class="list-plain">
+            <li>Build Your Own Static Website <span class="yr">2026</span></li>
+            <li>Build Your Own Dynamic Web Application <span class="yr">2026</span></li>
+            <li>Programming Foundation with Python <span class="yr">2026</span></li>
+            <li>Introduction to Database <span class="yr">2026</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Awards</h3>
+          <ul class="list-plain">
+            <li>Class Topper <span class="yr">Apr 2026</span></li>
+            <li>Academic Excellence Award <span class="yr">Mar 2024</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="languages">
+        <span class="lang"><b>English</b> — Intermediate</span>
+        <span class="lang"><b>Tamil</b> — Native</span>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="designator">U7 <span>// CONTACT</span></p>
+    <h2>Let's build something.</h2>
+    <p>Open to Frontend, Software, and Python Developer roles for Batch 2026. Reach out directly — no forms, no gatekeeping.</p>
+    <div class="hero-links">
+      <a class="pill" href="mailto:erabdulhaja786@gmail.com"><span class="dot"></span>erabdulhaja786@gmail.com</a>
+      <a class="pill" href="tel:+918148825904"><span class="dot"></span>+91 81488 25904</a>
+    </div>
+    <p class="foot-note">SCHEMATIC REV. 2026 · ABDUL RAHMAN · TIRUNELVELI, TAMIL NADU</p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var circuit = document.getElementById('circuit');
+    var fill = document.getElementById('traceFill');
+    var sections = Array.prototype.slice.call(document.querySelectorAll('[data-pad]'));
+    var isMobile = window.matchMedia('(max-width: 640px)').matches;
+
+    function placePads(){
+      // remove old pads
+      document.querySelectorAll('.pad').forEach(function(p){ p.remove(); });
+      if(isMobile) return;
+      var circuitTop = circuit.getBoundingClientRect().top + window.scrollY;
+      sections.forEach(function(sec){
+        var pad = document.createElement('div');
+        pad.className = 'pad';
+        var top = sec.getBoundingClientRect().top + window.scrollY - circuitTop;
+        pad.style.top = top + 'px';
+        pad.dataset.target = sec.id;
+        circuit.appendChild(pad);
+      });
+    }
+
+    function updateFill(){
+      if(isMobile) return;
+      var rect = circuit.getBoundingClientRect();
+      var total = circuit.offsetHeight;
+      var viewportCenter = window.innerHeight * 0.5;
+      var progressPx = viewportCenter - rect.top;
+      progressPx = Math.max(0, Math.min(progressPx, total));
+      fill.style.height = progressPx + 'px';
+    }
+
+    function lightPads(){
+      sections.forEach(function(sec){
+        var r = sec.getBoundingClientRect();
+        var inView = r.top < window.innerHeight * 0.6 && r.bottom > window.innerHeight * 0.1;
+        var pad = document.querySelector('.pad[data-target="' + sec.id + '"]');
+        if(pad){ pad.classList.toggle('lit', inView); }
+      });
+    }
+
+    function onScroll(){
+      updateFill();
+      lightPads();
+    }
+
+    window.addEventListener('resize', function(){
+      isMobile = window.matchMedia('(max-width: 640px)').matches;
+      placePads();
+      onScroll();
+    });
+
+    placePads();
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive:true });
+  })();
+</script>
+
+</body>
+</html>
